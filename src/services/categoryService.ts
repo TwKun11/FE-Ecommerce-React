@@ -1,5 +1,5 @@
-// src/services/categoryService.ts
-import axios from ".././api/axios";
+// services/categoryService.ts
+import axios from "../api/axios";
 
 export type Category = {
   id: number;
@@ -7,6 +7,17 @@ export type Category = {
 };
 
 export const getAllCategories = async (): Promise<Category[]> => {
-  const response = await axios.get("/categories?page=1&limit=5");
-  return response.data;
+  try {
+    const params = { page: 1, limit: 5 };
+    const { data } = await axios.get("/categories", { params });
+
+    if (!Array.isArray(data)) {
+      throw new Error("Dữ liệu danh mục không hợp lệ");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh mục:", error);
+    throw error;
+  }
 };
