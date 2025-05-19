@@ -1,12 +1,10 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { publicRoutes } from "./routes/routes";
-import DefaultLayout from "./layouts/DefaultLayouts/DefaultLayouts";
 import type { RouteConfig } from "./interface/RouteConfig";
-import { Suspense, type ReactNode } from "react";
-import Loader from "./components/common/Loader/Loader";
-const FragmentWrapper: React.FC<{ children: ReactNode }> = ({ children }) => (
-  <>{children}</>
-);
+import { Suspense } from "react";
+import Loader from "./components/common/Loader";
+import DefaultLayout from "./layouts/DefaultLayouts";
 
 function App() {
   return (
@@ -15,17 +13,18 @@ function App() {
         <Suspense fallback={<Loader />}>
           <Routes>
             {publicRoutes.map(
-              ({ path, components: Page, layout }: RouteConfig, index) => {
-                const Layout =
-                  layout === null ? FragmentWrapper : layout || DefaultLayout;
+              ({ path, component: Page, layout }: RouteConfig) => {
+                // Nếu layout === null thì không hiệu chỉnh, dùng React.Fragment để bao bọc
+                const LayoutComponent =
+                  layout === null ? React.Fragment : layout || DefaultLayout;
                 return (
                   <Route
-                    key={index}
+                    key={path} // Sử dụng path làm khóa, đảm bảo tính duy nhất
                     path={path}
                     element={
-                      <Layout>
+                      <LayoutComponent>
                         <Page />
-                      </Layout>
+                      </LayoutComponent>
                     }
                   />
                 );
